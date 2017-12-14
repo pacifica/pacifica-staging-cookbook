@@ -6,17 +6,8 @@
 
 require 'spec_helper'
 
-describe 'test::pacifica_base' do
+describe 'unit::pacifica_base' do
   base_resource = {
-    pacifica_archiveinterface: 'archiveinterface',
-    pacifica_cartfrontend: 'cartwsgi',
-    pacifica_cartbackend: 'cartd',
-    pacifica_metadata: 'metadata',
-    pacifica_policy: 'policy',
-    pacifica_proxy: 'proxy',
-    pacifica_uniqueid: 'uniqueid',
-    pacifica_ingestbackend: 'ingestd',
-    pacifica_ingestfrontend: 'ingestwsgi',
     pacifica_uploaderbackend: 'uploaderd',
     pacifica_uploaderfrontend: 'uploaderwsgi',
   }

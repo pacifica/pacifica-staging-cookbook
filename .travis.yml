@@ -1,4 +1,3 @@
-sudo: required
 dist: trusty
 addons:
   apt:
@@ -9,7 +8,6 @@ addons:
 
 install: echo "skip bundle install"
 
-services: docker
 before_script:
   - eval "$(/opt/chefdk/bin/chef shell-init bash)"
 
@@ -19,8 +17,8 @@ script:
   - /opt/chefdk/embedded/bin/cookstyle
   - /opt/chefdk/embedded/bin/foodcritic --version
   - /opt/chefdk/embedded/bin/foodcritic .
-  - /opt/chefdk/embedded/bin/rspec --version
-  - /opt/chefdk/embedded/bin/rspec
+#  - /opt/chefdk/embedded/bin/rspec --version
+#  - /opt/chefdk/embedded/bin/rspec
 
 notifications:
   email:

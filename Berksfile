@@ -2,4 +2,5 @@ source 'https://supermarket.chef.io'
 
 metadata
 
-cookbook 'test', path: './test/fixtures/cookbooks/test', group: :integration
+cookbook 'pacifica', github: 'pacifica/pacifica-cookbook'
+cookbook 'unit', path: './test/fixtures/cookbooks/unit', group: :integration

@@ -1,10 +1,10 @@
-# Pacifica Cookbook
+# Pacifica Staging Cookbook
 
-[![Build Status](https://travis-ci.org/pacifica/pacifica-cookbook.svg?branch=master)](https://travis-ci.org/pacifica/pacifica-cookbook)
-[![Cookbook Version](https://img.shields.io/cookbook/v/pacifica.svg)](https://supermarket.chef.io/cookbooks/pacifica)
+[![Build Status](https://travis-ci.org/pacifica/pacifica-staging-cookbook.svg?branch=master)](https://travis-ci.org/pacifica/pacifica-staging-cookbook)
+[![Cookbook Version](https://img.shields.io/cookbook/v/pacifica-staging.svg)](https://supermarket.chef.io/cookbooks/pacifica-staging)
 
-This library cookbook provides resources
-to install and configures [pacifica](https://github.com/pacifica/pacifica)
+This library cookbook provides staging resources
+to install and configures [pacifica](https://github.com/pacifica/pacifica-staging)
 
 ## Requirements
 
@@ -20,7 +20,8 @@ configuration of cgroups and storage back ends.
 
 | Platform     | Tested |
 |--------------|:------:|
-| centos-7.3   | ✔      |
+| centos-6.9   | ✔      |
+| centos-7.4   | ✔      |
 | ubuntu-16.04 | ✔      |
 
 ## Cookbook Dependencies
