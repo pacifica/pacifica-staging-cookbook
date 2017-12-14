@@ -1,7 +1,7 @@
 name 'pacifica-staging'
 maintainer 'David Brown'
 maintainer_email 'dmlb2000@gmail.com'
-license 'Apache v2.0'
+license 'Apache-2.0'
 description 'Installs/Configures pacifica staging'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 if respond_to?(:issues_url)
