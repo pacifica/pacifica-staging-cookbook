@@ -1,7 +1,7 @@
-name 'test'
+name 'unit'
 maintainer 'David Brown'
 maintainer_email 'dmlb2000@gmail.com'
-license 'Apache v2.0'
+license 'Apache-2.0'
 description 'Installs/Configures pacifica'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 if respond_to?(:issues_url)
@@ -12,6 +12,7 @@ if respond_to?(:source_url)
 end
 version '0.1.0'
 
+depends 'pacifica-staging'
 depends 'pacifica'
 depends 'rabbitmq', '>= 4.10.0'
 depends 'erlang', '>= 4.0.0'
