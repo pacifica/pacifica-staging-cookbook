@@ -6,7 +6,7 @@
 
 require 'spec_helper'
 
-describe 'test::pacifica_base_php' do
+describe 'unit::pacifica_base_php' do
   base_php_resource = {
     pacifica_status: 'status',
     pacifica_reporting: 'reporting',

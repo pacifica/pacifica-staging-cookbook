@@ -6,7 +6,7 @@
 
 require 'spec_helper'
 
-describe 'test::pacifica_base' do
+describe 'unit::pacifica_base' do
   base_resource = {
     pacifica_uploaderbackend: 'uploaderd',
     pacifica_uploaderfrontend: 'uploaderwsgi',
