@@ -4,7 +4,7 @@ module PacificaCookbook
   class PacificaUploaderFrontend < PacificaBase
     resource_name :pacifica_uploaderfrontend
     property :name, String, name_property: true
-    property :service_name, String, default: lazy { "#{name}-#{resource_name.to_s.gsub(/_/, '-')}" }
+    property :service_name, String, default: lazy { "#{name}-#{resource_name.to_s.tr('_', '-')}" }
     property :script_name, String, default: lazy { "#{service_name}.sh" }
     property :config_name, Hash, default: lazy { "#{service_name}/UploaderConfig.json" }
     property :pip_install_opts, Hash, default: lazy {
@@ -24,8 +24,8 @@ module PacificaCookbook
       extend PacificaCookbook::PacificaHelpers::Base
       {
         variables: {
-          content: uploader_default_config.to_json
-        }
+          content: uploader_default_config.to_json,
+        },
       }
     }
     property :run_command, String, default: lazy { "python manage.py runserver 127.0.0.1:#{port}" }
@@ -33,11 +33,11 @@ module PacificaCookbook
     property :git_opts, Hash, default: lazy {
       {
         repository: 'https://github.com/EMSL-MSC/pacifica-uploader.git',
-        destination: "#{prefix_dir}/#{service_name}"
+        destination: "#{prefix_dir}/#{service_name}",
       }
     }
     property :script_opts, Hash, default: lazy {
-      {	    
+      {
         content: <<-EOH
 #!/bin/bash
 . #{prefix_dir}/bin/activate

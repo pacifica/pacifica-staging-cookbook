@@ -4,19 +4,19 @@ module PacificaCookbook
   class PacificaUploaderBackend < PacificaBase
     resource_name :pacifica_uploaderbackend
     property :name, String, name_property: true
-    property :service_name, String, default: lazy { "#{name}-#{resource_name.to_s.gsub(/_/, '-')}" }
+    property :service_name, String, default: lazy { "#{name}-#{resource_name.to_s.tr('_', '-')}" }
     property :script_name, String, default: lazy { "#{service_name}.sh" }
     property :config_name, Hash, default: lazy { "#{service_name}/UploaderConfig.json" }
     property :pip_install_opts, Hash, default: lazy {
       {
-        command: "-m pip install -r #{prefix_dir}/#{service_name}/requirements.txt"
+        command: "-m pip install -r #{prefix_dir}/#{service_name}/requirements.txt",
       }
     }
     property :service_opts, Hash, default: lazy {
       {
         directory: "#{prefix_dir}/#{service_name}",
         environment: {
-          BROKER_VHOST: "/uploader",
+          BROKER_VHOST: '/uploader',
         },
       }
     }
@@ -24,15 +24,15 @@ module PacificaCookbook
       extend PacificaCookbook::PacificaHelpers::Base
       {
         variables: {
-          content: uploader_default_config.to_json
-	}
+          content: uploader_default_config.to_json,
+        },
       }
     }
     property :run_command, String, default: 'python -m celery -A UploadServer worker -l info'
     property :git_opts, Hash, default: lazy {
       {
         repository: 'https://github.com/EMSL-MSC/pacifica-uploader.git',
-        destination: "#{prefix_dir}/#{service_name}"
+        destination: "#{prefix_dir}/#{service_name}",
       }
     }
     property :script_opts, Hash, default: lazy {

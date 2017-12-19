@@ -32,9 +32,9 @@ describe 'unit::uploader' do
           expect(chef_run).to create_directory('/opt/default')
         end
 
-	it 'Creates git repository' do
-		expect(chef_run).to sync_git('/opt/default/default-pacifica-uploaderfrontend')
-	end
+        it 'Creates git repository' do
+          expect(chef_run).to sync_git('/opt/default/default-pacifica-uploaderfrontend')
+        end
 
         it 'Creates the bash script file' do
           expect(chef_run).to create_file('/opt/default/default-pacifica-uploaderfrontend.sh')
