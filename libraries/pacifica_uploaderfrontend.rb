@@ -4,8 +4,8 @@ module PacificaCookbook
   class PacificaUploaderFrontend < PacificaBase
     resource_name :pacifica_uploaderfrontend
     property :name, String, name_property: true
-    property :service_name, String, default: lazy { "#{name}-#{self.class.name.gsub(/^.*::/, '')}" }
-    property :script_name, String, default: lazy { "#{service_name}" }
+    property :service_name, String, default: lazy { "#{name}-#{resource_name.to_s.gsub(/_/, '-')}" }
+    property :script_name, String, default: lazy { "#{service_name}.sh" }
     property :config_name, Hash, default: lazy { "#{service_name}/UploaderConfig.json" }
     property :pip_install_opts, Hash, default: lazy {
       {
@@ -16,14 +16,16 @@ module PacificaCookbook
       {
         directory: "#{prefix_dir}/#{service_name}",
         environment: {
-          VOLUME_PATH: "#{prefix_dir}/#{service_name}/uploaderdata",
           BROKER_VHOST: '/uploader',
         },
       }
     }
-    property :config_opts, Hash, default: {
-      variables: {
-        content: '{}'
+    property :config_opts, Hash, default: lazy {
+      extend PacificaCookbook::PacificaHelpers::Base
+      {
+        variables: {
+          content: uploader_default_config.to_json
+        }
       }
     }
     property :run_command, String, default: lazy { "python manage.py runserver 127.0.0.1:#{port}" }
@@ -32,6 +34,18 @@ module PacificaCookbook
       {
         repository: 'https://github.com/EMSL-MSC/pacifica-uploader.git',
         destination: "#{prefix_dir}/#{service_name}"
+      }
+    }
+    property :script_opts, Hash, default: lazy {
+      {	    
+        content: <<-EOH
+#!/bin/bash
+. #{prefix_dir}/bin/activate
+export LD_LIBRARY_PATH=/opt/chef/embedded/lib:/opt/rh/python27/root/usr/lib64
+export LD_RUN_PATH=/opt/chef/embedded/lib:/opt/rh/python27/root/usr/lib64
+python DatabaseCreate.py
+exec #{run_command}
+EOH
       }
     }
     default_action :create
