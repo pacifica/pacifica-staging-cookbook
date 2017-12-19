@@ -1,7 +1,5 @@
 # pacifica cookbook module
 module PacificaCookbook
-  require_relative 'helpers_base_dir'
-  require_relative 'helpers_base'
   # Pacifica base class with common properties and actions
   class PacificaBasePhp < ChefCompat::Resource
     include PacificaHelpers::BaseDirectories

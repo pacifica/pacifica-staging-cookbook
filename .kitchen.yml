@@ -30,3 +30,6 @@ suites:
   - name: status
     run_list:
       - recipe[unit::status]
+  - name: uploader
+    run_list:
+      - recipe[unit::uploader]
