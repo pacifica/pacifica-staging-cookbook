@@ -6,7 +6,7 @@ module PacificaCookbook
     property :name, String, name_property: true
     property :service_name, String, default: lazy { "#{name}-#{resource_name.to_s.tr('_', '-')}" }
     property :script_name, String, default: lazy { "#{service_name}.sh" }
-    property :config_name, Hash, default: lazy { "#{service_name}/UploaderConfig.json" }
+    property :config_name, String, default: lazy { "#{service_name}/UploaderConfig.json" }
     property :pip_install_opts, Hash, default: lazy {
       {
         command: "-m pip install -r #{prefix_dir}/#{service_name}/requirements.txt",
