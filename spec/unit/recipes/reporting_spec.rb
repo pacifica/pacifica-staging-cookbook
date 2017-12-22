@@ -33,11 +33,11 @@ describe 'unit::reporting' do
         end
 
         it 'Creates prefix directory' do
-          expect(chef_run).to create_directory('/var/www/default-pacifica-reporting')
+          expect(chef_run).to create_directory('/var/www/html')
         end
 
         it 'Creates git repository' do
-          expect(chef_run).to sync_git('Clone Website for default')
+          expect(chef_run).to sync_git('Clone Website for default-pacifica-reporting')
         end
 
         it 'Installs package tar' do
@@ -45,14 +45,14 @@ describe 'unit::reporting' do
         end
 
         it 'Deploys the code' do
-          expect(chef_run).to run_bash('Deploy Code for default')
+          expect(chef_run).to run_bash('Deploy Code for default-pacifica-reporting')
         end
 
         it 'Creates file for config' do
-          expect(chef_run).to create_file('File default production config')
+          expect(chef_run).to create_file('File default-pacifica-reporting production config')
         end
         it 'Creates file for database' do
-          expect(chef_run).to create_file('File default production database')
+          expect(chef_run).to create_file('File default-pacifica-reporting production database')
         end
       end
     end
