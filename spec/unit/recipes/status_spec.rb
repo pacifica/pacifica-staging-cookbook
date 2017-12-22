@@ -18,7 +18,7 @@ describe 'unit::status' do
       context "on an #{platform.capitalize}-#{version} box" do
         cached(:chef_run) do
           ChefSpec::ServerRunner.new(
-            platform: platform, version: version,
+            platform: platform, version: version
           ).converge(described_recipe)
         end
 

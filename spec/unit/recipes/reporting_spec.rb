@@ -52,7 +52,6 @@ describe 'unit::reporting' do
         it 'Creates file for database' do
           expect(chef_run).to create_file('File default production database')
         end
-
       end
     end
   end

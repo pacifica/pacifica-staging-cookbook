@@ -23,7 +23,7 @@ module PacificaCookbook
       git "Clone Website for #{new_resource.name}" do
         destination "#{Chef::Config[:file_cache_path]}/#{new_resource.name}-#{resource_name.to_s.tr('_', '-')}"
         enable_submodules true
-	notifies :run, "bash[Deploy Code for #{new_resource.name}]"
+        notifies :run, "bash[Deploy Code for #{new_resource.name}]"
         git_opts.each do |attr, value|
           send(attr, value)
         end
@@ -36,7 +36,7 @@ module PacificaCookbook
 
       bash "Deploy Code for #{new_resource.name}" do
         cwd "#{Chef::Config[:file_cache_path]}/#{new_resource.name}"
-	code <<-EOH
+        code <<-EOH
 	  git archive --format=tar HEAD | tar -C #{new_resource.prefix} -xf -
 	  EOH
       end
@@ -54,7 +54,7 @@ module PacificaCookbook
           EOH
           file "File #{new_resource.name} #{directory} #{filename}" do
             path "#{new_resource.prefix}/application/config/#{directory}/#{filename}.php"
-	    content content
+            content content
           end
         end
       end

@@ -10,11 +10,11 @@ module PacificaCookbook
       repository: 'https://github.com/EMSL-MSC/pacifica-reporting.git',
     }
     property :ci_prod_configs, Hash, default: {
-      config: %q{
+      config: %q(
       $config['log_threshold'] = 0;
       $config['base_url'] = "http://127.0.0.1";
       $config['local_timezone'] = "UTC";
-      },
+      ),
       database: %q{
       $db['default'] = array(
         'hostname' => "127.0.0.1",
@@ -28,7 +28,7 @@ module PacificaCookbook
         'cache_on' => TRUE,
         'cachedir' => "/tmp"
       );
-      }
+      },
     }
   end
 end
