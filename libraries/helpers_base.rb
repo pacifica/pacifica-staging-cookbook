@@ -4,145 +4,115 @@ module PacificaCookbook
   module PacificaHelpers
     # Helpers to call within the base action
     module Base
-      # Create prefixed directories
-      def base_packages
-        package "#{new_resource.name}_packages" do
-          if rhel?
-            package_name 'sqlite-devel'
-          elsif debian?
-            package_name %w(sqlite3 sqlite3-doc libsqlite3-dev)
-          end
-        end
-      end
-
-      def base_directory_resources
-        directory prefix_dir do
-          directory_opts.each do |attr, value|
-            send(attr, value)
-          end
-        end
-      end
-
-      def base_git_client
-        git_client new_resource.name do
-          git_client_opts.each do |attr, value|
-            send(attr, value)
-          end
-        end
-      end
-
-      def base_git
-        git source_dir do
-          notifies :restart, "service[#{new_resource.name}]"
+      def base_git_repository
+        git new_resource.name do
           git_opts.each do |attr, value|
             send(attr, value)
           end
         end
       end
 
-      def base_file
-        file "#{prefix_dir}/#{new_resource.name}" do
-          owner 'root'
-          group 'root'
-          mode '0700'
-          content <<-HDOC
-#!/bin/bash
-. #{virtualenv_dir}/bin/activate
-export PYTHONPATH=#{virtualenv_dir}/lib64/python2.7/site-packages
-export LD_LIBRARY_PATH=/opt/chef/embedded/lib
-export LD_RUN_PATH=/opt/chef/embedded/lib
-cd #{source_dir}
-exec -a #{new_resource.name} #{run_command}
-HDOC
-          notifies :restart, "service[#{new_resource.name}]"
-          script_opts.each do |attr, value|
-            send(attr, value)
-          end
-        end
-      end
+      def uploader_default_config
+        {
+          'dataRoot' => '/usr/share/man',
+          'target' => '/srv',
+          'timeout' => '1',
+          'statusServer' => 'http =>//status.local/view/',
+          'policyServer' => 'http =>//127.0.0.1 =>8181',
+          'ingestServer' => 'http =>//127.0.0.1 =>8066',
+          'timezone' =>  '',
+          'use_celery' => 'True',
 
-      def base_systemd_service
-        systemd_service new_resource.name do
-          description "start #{new_resource.name} in python"
-          after %w(network.target)
-          install do
-            wanted_by 'multi-user.target'
-          end
-          service do
-            working_directory source_dir
-            exec_start "#{prefix_dir}/#{new_resource.name}"
-            service_opts.each do |attr, value|
-              send(attr, value)
-            end
-          end
-          notifies :restart, "service[#{new_resource.name}]"
-        end
-      end
-
-      def base_service
-        service new_resource.name do
-          action [:enable, :start]
-        end
-      end
-
-      def base_python_runtime
-        python_runtime new_resource.name do
-          python_opts.each do |attr, value|
-            send(attr, value)
-          end
-        end
-      end
-
-      def base_python_virtualenv
-        python_virtualenv virtualenv_dir do
-          virtualenv_opts.each do |attr, value|
-            send(attr, value)
-          end
-        end
-      end
-
-      def base_python_execute_requirements
-        python_execute "#{new_resource.name}_requirements" do
-          virtualenv virtualenv_dir
-          command "-m pip install -r #{source_dir}/requirements.txt"
-          pip_install_opts.each do |attr, value|
-            send(attr, value)
-          end
-        end
-      end
-
-      def base_python_execute_uwsgi
-        python_execute "#{new_resource.name}_uwsgi" do
-          virtualenv virtualenv_dir
-          command '-m pip install uwsgi'
-          not_if { ::File.exist?("#{virtualenv_dir}/bin/uwsgi") }
-        end
-      end
-
-      def base_python_execute_dbcreate
-        python_execute "#{new_resource.name}_dbcreate" do
-          virtualenv virtualenv_dir
-          cwd source_dir
-          command "DatabaseCreate.py && touch #{prefix_dir}/.dbcreate"
-          environment service_opts[:environment] if service_opts.key?(:environment)
-          only_if { ::File.exist?("#{source_dir}/DatabaseCreate.py") }
-          not_if { ::File.exist?("#{prefix_dir}/.dbcreate") }
-          build_opts.each do |attr, value|
-            send(attr, value)
-          end
-        end
-      end
-
-      def base_python_execute_build
-        python_execute "#{new_resource.name}_build" do
-          virtualenv virtualenv_dir
-          cwd source_dir
-          command "setup.py install --prefix #{virtualenv_dir}"
-          only_if { ::File.exist?("#{source_dir}/setup.py") }
-          build_opts.each do |attr, value|
-            send(attr, value)
-          end
-        end
+          'theming' => {
+            'theme_name' => 'demos',
+            'site_name' => 'Demos',
+            'site_slogan' => 'Data Management for Science',
+            'archive_repository_name' => 'Pithos Archive',
+            'upload_data_source_name' => 'a Demos Instrument',
+            'uploader_page_name' => 'instrument data uploader',
+          },
+          'auth' => {},
+          'metadata' => [
+            {
+              'metaID' => 'logon',
+              'sourceTable' => 'users',
+              'destinationTable' => 'Transactions.submitter',
+              'value' => '',
+              'displayType' => 'logged_on',
+              'displayTitle' => 'Currently Logged On',
+              'valueField' => '_id',
+              'queryFields' => %w(first_name last_name _id),
+              'queryDependency' => { 'network_id' => 'logon' },
+              'diplayFormat' => '%(first_name)s %(last_name)s',
+            },
+            {
+              'metaID' => 'instrumentByID',
+              'sourceTable' => 'instruments',
+              'destinationTable' => 'Transactions.instrument',
+              'displayType' => 'select',
+              'displayTitle' => 'Instrument',
+              'value' => '34075',
+              'valueField' => '_id',
+              'queryDependency' => { '_id' => 'instrumentByID' },
+              'queryFields' => %w(_id name_short display_name),
+              'diplayFormat' => '%(_id)s %(name_short)s - %(display_name)s',
+            },
+            {
+              'sourceTable' => 'instruments',
+              'metaID' => 'instrumentDirectory',
+              'displayType' => 'directoryTree',
+              'directoryOrder' => 1,
+              'diplayFormat' => '%(name_short)s',
+              'valueField' => '_id',
+              'queryDependency' => { '_id' => 'instrumentByID' },
+              'queryFields' => %w(_id name_short),
+            },
+            {
+              'sourceTable' => 'proposals',
+              'metaID' => 'ProposalByInstrument',
+              'value' => '',
+              'destinationTable' => 'Transactions.proposal',
+              'displayTitle' => 'Proposal',
+              'displayType' => 'select',
+              'queryDependency' => { 'instrument_id' => 'instrumentByID' },
+              'valueField' => '_id',
+              'queryFields' => %w(_id title),
+              'diplayFormat' => '%(_id)s %(title)s',
+            },
+            {
+              'sourceTable' => 'proposals',
+              'metaID' => 'ProposalDirectory',
+              'value' => '',
+              'displayType' => 'directoryTree',
+              'diplayFormat' => 'Proposal %(_id)s',
+              'directoryOrder' => 0,
+              'queryDependency' => { '_id' => 'ProposalByInstrument' },
+              'valueField' => '_id',
+              'queryFields' => ['_id'],
+            },
+            {
+              'sourceTable' => 'users',
+              'metaID' => 'EmslUserOfRecord',
+              'destinationTable' => 'TransactionKeyValue',
+              'displayTitle' => 'Person of Record',
+              'displayType' => 'select',
+              'key' => 'User of Record',
+              'value' => '',
+              'queryDependency' => { 'proposal_id' => 'ProposalByInstrument' },
+              'valueField' => '_id',
+              'queryFields' => %w(first_name last_name _id),
+              'diplayFormat' => '%(first_name)s %(last_name)s',
+            },
+            {
+              'destinationTable' => 'TransactionKeyValue',
+              'metaID' => 'tag1',
+              'key' => 'Tag',
+              'value' => '',
+              'displayTitle' => 'Tag',
+              'displayType' => 'enter',
+            },
+          ],
+        }
       end
     end
   end
