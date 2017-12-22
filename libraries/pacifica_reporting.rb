@@ -9,18 +9,26 @@ module PacificaCookbook
     property :git_opts, Hash, default: {
       repository: 'https://github.com/EMSL-MSC/pacifica-reporting.git',
     }
-    property :ci_prod_config_vars, Hash, default: {
-      base_url: 'http://127.0.0.1',
-      timezone: 'UTC',
-    }
-    property :ci_prod_database_vars, Hash, default: {
-      db_host: '127.0.0.1',
-      db_user: 'reporting',
-      db_pass: 'reporting',
-      db_name: 'reporting',
-      db_driver: 'postgres',
-      cache_on: 'TRUE',
-      cache_dir: '/tmp',
+    property :ci_prod_configs, Hash, default: {
+      config: %q{
+      $config['log_threshold'] = 0;
+      $config['base_url'] = "http://127.0.0.1";
+      $config['local_timezone'] = "UTC";
+      },
+      database: %q{
+      $db['default'] = array(
+        'hostname' => "127.0.0.1",
+        'username' => "reporting",
+        'password' => "reporting",
+        'database' => "pacifica_reporting",
+        'dbdriver' => "mysqli",
+        'dbprefix' => "",
+        'pconnect' => TRUE,
+        'db_debug' => FALSE,
+        'cache_on' => TRUE,
+        'cachedir' => "/tmp"
+      );
+      }
     }
   end
 end
