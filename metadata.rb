@@ -20,5 +20,4 @@ supports 'redhat', '>= 6.0'
 
 depends 'pacifica'
 depends 'git'
-depends 'php'
 depends 'chef-sugar'

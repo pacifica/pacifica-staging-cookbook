@@ -3,7 +3,8 @@ module PacificaCookbook
   # Pacifica base class with common properties and actions
   class PacificaBasePhp < ChefCompat::Resource
     property :name, String, name_property: true
-    property :prefix, String, default: lazy { "/var/www/#{name}-#{resource_name.to_s.tr('_', '-')}" }
+    property :full_name, String, default: lazy { "#{name}-#{resource_name.to_s.tr('_', '-')}" }
+    property :prefix, String, default: lazy { "/var/www/#{full_name}" }
     property :git_opts, Hash, default: {}
     property :git_client_opts, Hash, default: {}
     property :ci_prod_configs, Hash, default: {}
@@ -20,10 +21,10 @@ module PacificaCookbook
       end
 
       # Clone the provided repository and include submodules
-      git "Clone Website for #{new_resource.name}" do
-        destination "#{Chef::Config[:file_cache_path]}/#{new_resource.name}-#{resource_name.to_s.tr('_', '-')}"
+      git "Clone Website for #{full_name}" do
+        destination "#{Chef::Config[:file_cache_path]}/#{full_name}"
         enable_submodules true
-        notifies :run, "bash[Deploy Code for #{new_resource.name}]"
+        notifies :run, "bash[Deploy Code for #{full_name}]"
         git_opts.each do |attr, value|
           send(attr, value)
         end
@@ -34,35 +35,39 @@ module PacificaCookbook
       end
       package 'tar'
 
-      bash "Deploy Code for #{new_resource.name}" do
-        cwd "#{Chef::Config[:file_cache_path]}/#{new_resource.name}"
+      bash "Deploy Code for #{full_name}" do
+        cwd "#{Chef::Config[:file_cache_path]}/#{full_name}"
         code <<-EOH
-	  git archive --format=tar HEAD | tar -C #{new_resource.prefix} -xf -
+	  git archive --format=tar HEAD | tar -C #{prefix} -xf -
+	  for dir in `git submodule status | awk '{ print $2 }'` ; do
+	    pushd $dir
+	    git archive --format=tar HEAD | tar -C #{prefix}/$dir -xf -
+	    popd
+	  done
+	  pushd #{prefix}
+	  rm -f index.php
+	  cp websystem/index.php index.php
+	  popd
 	  EOH
       end
 
       {
-        'production' => new_resource.ci_prod_configs,
-        'testing' => new_resource.ci_test_configs,
-        'development' => new_resource.ci_dev_configs,
+        'production' => ci_prod_configs,
+        'testing' => ci_test_configs,
+        'development' => ci_dev_configs,
       }.each do |directory, configs|
         configs.each do |filename, content|
           content = <<-EOH
-          <?php
-          defined('BASEPATH') OR exit('No direct script access allowed');
-          #{content}
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+#{content}
           EOH
-          file "File #{new_resource.name} #{directory} #{filename}" do
-            path "#{new_resource.prefix}/application/config/#{directory}/#{filename}.php"
+          file "File #{full_name} #{directory} #{filename}" do
+            path "#{prefix}/application/config/#{directory}/#{filename}.php"
             content content
           end
         end
       end
-      include_recipe 'php'
-      include_recipe 'php::module_pgsql'
-      include_recipe 'php::module_mysql'
-      include_recipe 'php::module_sqlite3'
-      include_recipe 'php::module_gd'
     end
   end
 end
