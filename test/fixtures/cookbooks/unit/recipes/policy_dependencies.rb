@@ -15,10 +15,12 @@ package 'php-gd'
 package 'php-mysql'
 package 'php-pgsql'
 package 'php-sqlite3'
+package 'php-curl'
 php_pear 'pg'
 php_pear 'mysql'
 php_pear 'sqlite3'
 php_pear 'gd'
+php_pear 'curl'
 
 execute 'Load Metadata Set' do
   environment LD_LIBRARY_PATH: '/opt/rh/python27/root/usr/lib64', LD_RUN_PATH: '/opt/rh/python27/root/usr/lib64'
