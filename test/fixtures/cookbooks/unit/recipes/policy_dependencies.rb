@@ -11,10 +11,6 @@ git "#{Chef::Config[:file_cache_path]}/pacifica-metadata" do
 end
 
 include_recipe 'php'
-include_recipe 'php::module_pgsql'
-include_recipe 'php::module_mysql'
-include_recipe 'php::module_sqlite3'
-include_recipe 'php::module_gd'
 
 execute 'Load Metadata Set' do
   environment LD_LIBRARY_PATH: '/opt/rh/python27/root/usr/lib64', LD_RUN_PATH: '/opt/rh/python27/root/usr/lib64'

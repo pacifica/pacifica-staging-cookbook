@@ -1,7 +1,7 @@
 # pacifica cookbook module
 module PacificaCookbook
   # Pacifica base class with common properties and actions
-  class PacificaBasePhp < ChefCompat::Resource
+  class PacificaBasePhp < Chef::Resource
     property :name, String, name_property: true
     property :full_name, String, default: lazy { "#{name}-#{resource_name.to_s.tr('_', '-')}" }
     property :prefix, String, default: lazy { "/var/www/#{full_name}" }
@@ -15,17 +15,17 @@ module PacificaCookbook
 
     action :create do
       git_client new_resource.name.to_s do
-        git_client_opts.each do |attr, value|
+        new_resource.git_client_opts.each do |attr, value|
           send(attr, value)
         end
       end
 
       # Clone the provided repository and include submodules
-      git "Clone Website for #{full_name}" do
-        destination "#{Chef::Config[:file_cache_path]}/#{full_name}"
+      git "Clone Website for #{new_resource.full_name}" do
+        destination "#{Chef::Config[:file_cache_path]}/#{new_resource.full_name}"
         enable_submodules true
-        notifies :run, "bash[Deploy Code for #{full_name}]"
-        git_opts.each do |attr, value|
+        notifies :run, "bash[Deploy Code for #{new_resource.full_name}]"
+        new_resource.git_opts.each do |attr, value|
           send(attr, value)
         end
       end
@@ -35,16 +35,16 @@ module PacificaCookbook
       end
       package 'tar'
 
-      bash "Deploy Code for #{full_name}" do
-        cwd "#{Chef::Config[:file_cache_path]}/#{full_name}"
+      bash "Deploy Code for #{new_resource.full_name}" do
+        cwd "#{Chef::Config[:file_cache_path]}/#{new_resource.full_name}"
         code <<-EOH
-	  git archive --format=tar HEAD | tar -C #{prefix} -xf -
+	  git archive --format=tar HEAD | tar -C #{new_resource.prefix} -xf -
 	  for dir in `git submodule status | awk '{ print $2 }'` ; do
 	    pushd $dir
-	    git archive --format=tar HEAD | tar -C #{prefix}/$dir -xf -
+	    git archive --format=tar HEAD | tar -C #{new_resource.prefix}/$dir -xf -
 	    popd
 	  done
-	  pushd #{prefix}
+	  pushd #{new_resource.prefix}
 	  rm -f index.php
 	  cp websystem/index.php index.php
 	  popd
@@ -52,9 +52,9 @@ module PacificaCookbook
       end
 
       {
-        'production' => ci_prod_configs,
-        'testing' => ci_test_configs,
-        'development' => ci_dev_configs,
+        'production' => new_resource.ci_prod_configs,
+        'testing' => new_resource.ci_test_configs,
+        'development' => new_resource.ci_dev_configs,
       }.each do |directory, configs|
         configs.each do |filename, content|
           content = <<-EOH
@@ -62,8 +62,8 @@ module PacificaCookbook
 defined('BASEPATH') OR exit('No direct script access allowed');
 #{content}
           EOH
-          file "File #{full_name} #{directory} #{filename}" do
-            path "#{prefix}/application/config/#{directory}/#{filename}.php"
+          file "File #{new_resource.full_name} #{directory} #{filename}" do
+            path "#{new_resource.prefix}/application/config/#{directory}/#{filename}.php"
             content content
           end
         end
