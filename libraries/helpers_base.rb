@@ -6,7 +6,7 @@ module PacificaCookbook
     module Base
       def base_git_repository
         git new_resource.name do
-          git_opts.each do |attr, value|
+          new_resource.git_opts.each do |attr, value|
             send(attr, value)
           end
         end
@@ -17,9 +17,9 @@ module PacificaCookbook
           'dataRoot' => '/usr/share/man',
           'target' => '/srv',
           'timeout' => '1',
-          'statusServer' => 'http =>//status.local/view/',
-          'policyServer' => 'http =>//127.0.0.1 =>8181',
-          'ingestServer' => 'http =>//127.0.0.1 =>8066',
+          'statusServer' => 'http://status.local/view/',
+          'policyServer' => 'http://127.0.0.1:8181',
+          'ingestServer' => 'http://127.0.0.1:8066',
           'timezone' =>  '',
           'use_celery' => 'True',
 

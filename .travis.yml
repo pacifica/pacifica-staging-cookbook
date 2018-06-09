@@ -1,10 +1,19 @@
 dist: trusty
+sudo: required
+group: edge
+services: docker
 addons:
   apt:
     sources:
       - chef-stable-trusty
     packages:
       - chefdk
+
+env:
+  matrix:
+  - T=reporting
+  - T=status
+  - T=uploader
 
 install: echo "skip bundle install"
 
@@ -13,12 +22,14 @@ before_script:
 
 script:
   - /opt/chefdk/embedded/bin/chef --version
+  - /opt/chefdk/embedded/bin/chef gem install kitchen-dokken
   - /opt/chefdk/embedded/bin/cookstyle --version
   - /opt/chefdk/embedded/bin/cookstyle
   - /opt/chefdk/embedded/bin/foodcritic --version
   - /opt/chefdk/embedded/bin/foodcritic .
   - /opt/chefdk/embedded/bin/rspec --version
-  - /opt/chefdk/embedded/bin/rspec
+  - /opt/chefdk/embedded/bin/rspec --fail-fast
+  - /opt/chefdk/embedded/bin/kitchen test $T -d always
 
 notifications:
   email:
