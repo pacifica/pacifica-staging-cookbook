@@ -15,8 +15,8 @@ version '0.1.0'
 chef_version '>= 13'
 
 supports 'ubuntu', '>= 16.04'
-supports 'centos', '>= 6.0'
-supports 'redhat', '>= 6.0'
+supports 'centos', '>= 7.0'
+supports 'redhat', '>= 7.0'
 
 depends 'pacifica'
 depends 'git'
