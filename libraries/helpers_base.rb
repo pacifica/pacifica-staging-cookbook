@@ -6,7 +6,7 @@ module PacificaCookbook
     module Base
       def base_git_repository
         git new_resource.name do
-          git_opts.each do |attr, value|
+          new_resource.git_opts.each do |attr, value|
             send(attr, value)
           end
         end
