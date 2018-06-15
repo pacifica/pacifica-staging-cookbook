@@ -38,17 +38,17 @@ module PacificaCookbook
       bash "Deploy Code for #{new_resource.full_name}" do
         cwd "#{Chef::Config[:file_cache_path]}/#{new_resource.full_name}"
         code <<-EOH
-	  git archive --format=tar HEAD | tar -C #{new_resource.prefix} -xf -
-	  for dir in `git submodule status | awk '{ print $2 }'` ; do
-	    pushd $dir
-	    git archive --format=tar HEAD | tar -C #{new_resource.prefix}/$dir -xf -
-	    popd
-	  done
-	  pushd #{new_resource.prefix}
-	  rm -f index.php
-	  cp websystem/index.php index.php
-	  popd
-	  EOH
+      git archive --format=tar HEAD | tar -C #{new_resource.prefix} -xf -
+      for dir in `git submodule status | awk '{ print $2 }'` ; do
+        pushd $dir
+        git archive --format=tar HEAD | tar -C #{new_resource.prefix}/$dir -xf -
+        popd
+      done
+      pushd #{new_resource.prefix}
+      rm -f index.php
+      cp websystem/index.php index.php
+      popd
+      EOH
       end
 
       {
